@@ -103,6 +103,7 @@ def speech_history(request):
     history = SpeechAnalysis.objects.all().order_by('-created_at')
     return render(request, 'history.html', {'history': history})
 
+import json
 @login_required(login_url='login')
 def improvement_dashboard(request):
     # Fetch all records ordered by date
@@ -113,8 +114,8 @@ def improvement_dashboard(request):
     speeds = [h.speech_speed for h in history]
     
     context = {
-        'dates': dates,
-        'scores': scores,
-        'speeds': speeds,
+        'dates': json.dumps(dates),
+        'scores': json.dumps(scores),
+        'speeds': json.dumps(speeds),
     }
     return render(request, 'dashboard.html', context)

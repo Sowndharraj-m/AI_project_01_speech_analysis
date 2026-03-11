@@ -39,9 +39,9 @@
 
 <script>
 
-const dates = JSON.parse('{{ dates|default:"[]"|escapejs }}');
-const scores = JSON.parse('{{ scores|default:"[]"|escapejs }}');
-const speeds = JSON.parse('{{ speeds|default:"[]"|escapejs }}');
+const dates = {{ dates|safe }};
+const scores = {{ scores|safe }};
+const speeds = {{ speeds|safe }};
 
 // Confidence Chart
 const ctxConfidence = document.getElementById('confidenceChart').getContext('2d');
