@@ -99,6 +99,13 @@ def results_dashboard(request, pk):
     return render(request, 'results.html', context)
 
 @login_required(login_url='login')
+def delete_speech(request, pk):
+    if request.method == 'POST':
+        analysis = get_object_or_404(SpeechAnalysis, pk=pk)
+        analysis.delete()
+    return redirect('speech_history')
+
+@login_required(login_url='login')
 def speech_history(request):
     history = SpeechAnalysis.objects.all().order_by('-created_at')
     return render(request, 'history.html', {'history': history})
@@ -109,12 +116,17 @@ def improvement_dashboard(request):
     # Fetch all records ordered by date
     history = SpeechAnalysis.objects.all().order_by('created_at')
     
-    dates = [h.created_at.strftime("%Y-%m-%d %H:%M") for h in history]
+    # Format labels as "Speech X" + date, e.g. "Speech 1 (Mar 11)" for readability
+    labels = []
+    for i, h in enumerate(history, 1):
+        date_str = h.created_at.strftime("%b %d")
+        labels.append(f"Speech {i} ({date_str})")
+        
     scores = [h.confidence_score for h in history]
     speeds = [h.speech_speed for h in history]
     
     context = {
-        'dates': json.dumps(dates),
+        'labels': json.dumps(labels),
         'scores': json.dumps(scores),
         'speeds': json.dumps(speeds),
     }

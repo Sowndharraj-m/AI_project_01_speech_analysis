@@ -2,17 +2,17 @@
 
 {% block content %}
 <div class="row mb-5 text-center">
-    <h2>Improvement Dashboard</h2>
-    <p class="text-muted">Track your progress over time</p>
+    <h2 class="fw-bold" style="color: #2a5298;">📈 Improvement Dashboard 🚀</h2>
+    <p class="text-muted">Track your speaking progress and fluency over time</p>
 </div>
 
 <div class="row g-4">
 
     <!-- Confidence Over Time Chart -->
     <div class="col-lg-8">
-        <div class="card shadow">
-            <div class="card-header bg-success text-white">
-                Confidence Score Trend
+        <div class="card shadow border-0">
+            <div class="card-header text-white fw-bold" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                🎯 Confidence Score Trend
             </div>
             <div class="card-body">
                 <canvas id="confidenceChart" height="150"></canvas>
@@ -22,9 +22,9 @@
 
     <!-- Speed Tracking Chart -->
     <div class="col-lg-4">
-        <div class="card shadow">
-            <div class="card-header bg-info text-white">
-                Speech Speed Tracking
+        <div class="card shadow border-0">
+            <div class="card-header text-white fw-bold" style="background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);">
+                ⚡ Speech Speed Tracking
             </div>
             <div class="card-body">
                 <canvas id="speedChart" height="250"></canvas>
@@ -39,7 +39,7 @@
 
 <script>
 
-const dates = {{ dates|safe }};
+const labels = {{ labels|safe }};
 const scores = {{ scores|safe }};
 const speeds = {{ speeds|safe }};
 
@@ -49,7 +49,7 @@ const ctxConfidence = document.getElementById('confidenceChart').getContext('2d'
 new Chart(ctxConfidence, {
     type: 'line',
     data: {
-        labels: dates,
+        labels: labels,
         datasets: [{
             label: 'Confidence Score',
             data: scores,
@@ -57,12 +57,30 @@ new Chart(ctxConfidence, {
             backgroundColor: 'rgba(25,135,84,0.2)',
             borderWidth: 3,
             fill: true,
-            tension: 0.3
+            tension: 0.3,
+            pointBackgroundColor: '#198754',
+            pointRadius: 4,
+            pointHoverRadius: 6
         }]
     },
     options: {
         responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Score: ' + context.parsed.y + '%';
+                    }
+                }
+            }
+        },
         scales: {
+            x: {
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+            },
             y: {
                 min: 0,
                 max: 100
@@ -78,16 +96,34 @@ const ctxSpeed = document.getElementById('speedChart').getContext('2d');
 new Chart(ctxSpeed, {
     type: 'bar',
     data: {
-        labels: dates,
+        labels: labels,
         datasets: [{
-            label: 'Speech Speed (WPM)',
+            label: 'Speech Speed',
             data: speeds,
-            backgroundColor: '#0dcaf0'
+            backgroundColor: 'rgba(13, 202, 240, 0.8)',
+            borderColor: '#0dcaf0',
+            borderWidth: 1,
+            borderRadius: 4
         }]
     },
     options: {
         responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Speed: ' + context.parsed.y + ' WPM';
+                    }
+                }
+            }
+        },
         scales: {
+            x: {
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+            },
             y: {
                 beginAtZero: true
             }

@@ -50,9 +50,12 @@
                     <div class="tab-pane fade" id="upload" role="tabpanel">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="id_uploaded_file" class="form-label">Upload Audio/Video File</label>
+                            <div class="mb-3 text-start">
+                                <label for="id_uploaded_file" class="form-label fw-bold">Upload Audio or Video File</label>
                                 {{ form.uploaded_file }}
+                                <div class="form-text mt-2 text-muted">
+                                    <strong>Supported formats:</strong> .mp3, .wav, .mp4, .m4a, .aac, .ogg, .flac, .webm, .weba
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-lg w-100">Analyze Uploaded Speech</button>
                         </form>

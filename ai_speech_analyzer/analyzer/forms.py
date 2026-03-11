@@ -6,5 +6,8 @@ class UploadSpeechForm(forms.ModelForm):
         model = SpeechAnalysis
         fields = ['uploaded_file']
         widgets = {
-            'uploaded_file': forms.FileInput(attrs={'class': 'form-control', 'accept': 'audio/*,video/*'})
+            'uploaded_file': forms.FileInput(attrs={
+                'class': 'form-control', 
+                'accept': '.wav,.weba,.webm,.mp3,.ogg,.flac,.m4a,.aac,.mp4'
+            })
         }
