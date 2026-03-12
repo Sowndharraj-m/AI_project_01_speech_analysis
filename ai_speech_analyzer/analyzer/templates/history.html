@@ -28,7 +28,7 @@
                             N/A
                             {% endif %}
                         </td>
-                        <td><span class="badge bg-primary fs-6">{{ item.confidence_score }}</span></td>
+                        <td><span class="badge bg-primary fs-6">{{ item.confidence_score|floatformat:1 }}</span></td>
                         <td>{{ item.speech_speed }}</td>
                         <td>{{ item.filler_word_count }}</td>
                         <td>
