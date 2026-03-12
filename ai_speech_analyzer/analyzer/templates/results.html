@@ -4,10 +4,12 @@
 <div id="contentToExport" class="p-4 bg-white rounded">
 <div class="row mb-4 position-relative">
     <div class="col-md-12 text-center">
-        <h2 class="display-4">Analysis Results</h2>
-        <p class="lead">
+        <h2 class="display-4 fw-bolder mb-3" style="background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+            ✨ Analysis Results ✨
+        </h2>
+        <p class="lead fw-bold text-secondary">
             Overall Confidence Score:
-            <strong>{{ analysis.confidence_score|default:"0"|floatformat:1 }} / 100</strong>
+            <strong class="text-dark fs-4">{{ analysis.confidence_score|default:"0"|floatformat:1 }} <span class="text-muted fs-6">/ 100</span></strong>
         </p>
         <button id="downloadPdfBtn" class="btn btn-outline-danger position-absolute top-0 end-0 mt-3 me-3" data-html2canvas-ignore="true">
             <i class="bi bi-file-earmark-pdf"></i> Download PDF Report
