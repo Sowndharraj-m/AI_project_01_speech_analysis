@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-4">
+<div id="contentToExport" class="p-4 bg-white rounded">
+<div class="row mb-4 position-relative">
     <div class="col-md-12 text-center">
         <h2 class="display-4">Analysis Results</h2>
         <p class="lead">
             Overall Confidence Score:
-            <strong>{{ analysis.confidence_score|default:"0" }} / 100</strong>
+            <strong>{{ analysis.confidence_score|default:"0"|floatformat:1 }} / 100</strong>
         </p>
+        <button id="downloadPdfBtn" class="btn btn-outline-danger position-absolute top-0 end-0 mt-3 me-3" data-html2canvas-ignore="true">
+            <i class="bi bi-file-earmark-pdf"></i> Download PDF Report
+        </button>
     </div>
 </div>
 
@@ -107,23 +111,24 @@
 <div class="row mt-4 mb-5">
     <div class="col-md-12">
         <div class="card shadow">
-            <div class="card-header bg-secondary text-white">
-                Speech Transcript
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <span>Speech Transcript</span>
+                <small><span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Filler Words Highlighted</span></small>
             </div>
             <div class="card-body">
-                <p class="fst-italic text-muted">
-                    "{{ analysis.transcript|default:'No clear transcript could be generated.' }}"
-                </p>
+                <p id="transcriptText" class="fst-italic text-muted lh-lg" style="font-size: 1.1rem;">"{{ analysis.transcript|default:'No clear transcript could be generated.' }}"</p>
             </div>
         </div>
     </div>
 </div>
+</div> <!-- End contentToExport -->
 
 {% endblock %}
 
 
 {% block scripts %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -144,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             labels: [
                 "Speech Speed",
                 "Filler Words",
-                "Pauses",
+                "Pauses",   
                 "Voice Stability"
             ],
             datasets: [{
@@ -167,6 +172,46 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
+
+    // Transcript Highlighter
+    const transcriptEl = document.getElementById("transcriptText");
+    if (transcriptEl && transcriptEl.textContent.trim() !== '"No clear transcript could be generated."') {
+        let text = transcriptEl.innerHTML;
+        // Basic filler words array
+        const fillerWords = ['\\b(um+)\\b', '\\b(uh+)\\b', '\\b(like)\\b', '\\b(you know)\\b', '\\b(basically)\\b', '\\b(actually)\\b', '\\b(literally)\\b', '\\b(right)\\b'];
+        
+        fillerWords.forEach(regexStr => {
+            const regex = new RegExp(regexStr, 'gi');
+            text = text.replace(regex, '<span class="bg-warning text-dark px-1 rounded fw-bold" title="Filler word detected">$&</span>');
+        });
+        transcriptEl.innerHTML = text;
+    }
+
+    // PDF Export Logic
+    const downloadBtn = document.getElementById("downloadPdfBtn");
+    if (downloadBtn) {
+        downloadBtn.addEventListener("click", function() {
+            const element = document.getElementById("contentToExport");
+            const opt = {
+                margin:       0.2,
+                filename:     'Speech_Analysis_Report.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+            
+            // Hide the button itself during export
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating PDF...';
+            this.classList.add('disabled');
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('disabled');
+            });
+        });
+    }
 
 });
 

@@ -32,6 +32,18 @@
         </div>
     </div>
 
+    <!-- Radar Capabilities Chart -->
+    <div class="col-lg-12">
+        <div class="card shadow border-0">
+            <div class="card-header text-white fw-bold" style="background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);">
+                🕸️ Capability Overview (Latest vs Average)
+            </div>
+            <div class="card-body d-flex justify-content-center">
+                <canvas id="radarChart" height="400" style="max-height: 400px; max-width: 600px;"></canvas>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
 
@@ -126,6 +138,58 @@ new Chart(ctxSpeed, {
             },
             y: {
                 beginAtZero: true
+            }
+        }
+    }
+});
+
+// Radar Chart
+const latestRadar = {{ latest_radar|safe }};
+const averageRadar = {{ average_radar|safe }};
+
+const ctxRadar = document.getElementById('radarChart').getContext('2d');
+new Chart(ctxRadar, {
+    type: 'radar',
+    data: {
+        labels: ['Speed Control', 'Filler Control', 'Pauses', 'Stability', 'Confidence'],
+        datasets: [{
+            label: 'Latest Recording',
+            data: latestRadar,
+            backgroundColor: 'rgba(240, 52, 52, 0.2)',
+            borderColor: '#f03434',
+            pointBackgroundColor: '#f03434',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#f03434'
+        }, {
+            label: 'Historical Average',
+            data: averageRadar,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: '#36A2EB',
+            pointBackgroundColor: '#36A2EB',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#36A2EB'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.parsed.r + ' pts';
+                    }
+                }
+            }
+        },
+        scales: {
+            r: {
+                min: 0,
+                max: 100,
+                ticks: {
+                    stepSize: 20
+                }
             }
         }
     }

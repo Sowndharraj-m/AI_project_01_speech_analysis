@@ -125,9 +125,37 @@ def improvement_dashboard(request):
     scores = [h.confidence_score for h in history]
     speeds = [h.speech_speed for h in history]
     
+    # RADAR CHART CALCULATIONS: Latest vs Average (Normalized to 0-100 scales)
+    def get_radar_stats(h):
+        if not h: return [0, 0, 0, 0, 0]
+        # Speed Score: 140 WPM is ideal.
+        speed_score = max(0, 100 - abs(140 - h.speech_speed) * 0.8)
+        # Filler Control: 0 is ideal. Each filler deducts 5 points.
+        filler_score = max(0, 100 - (h.filler_word_count * 5))
+        # Pause Usage Score: ~5 pauses is ideal.
+        pause_score = max(0, 100 - abs(5 - h.pause_count) * 10)
+        # Stability: 0-100 directly.
+        stability_score = h.voice_stability
+        # Confidence: 0-100 directly.
+        conf_score = h.confidence_score
+        return [speed_score, filler_score, pause_score, stability_score, conf_score]
+        
+    latest_radar = get_radar_stats(history.last())
+    
+    average_radar = [0, 0, 0, 0, 0]
+    total_records = history.count()
+    if total_records > 0:
+        for h in history:
+            st = get_radar_stats(h)
+            for j in range(5):
+                average_radar[j] += st[j]
+        average_radar = [round(x / total_records, 1) for x in average_radar]
+
     context = {
         'labels': json.dumps(labels),
         'scores': json.dumps(scores),
         'speeds': json.dumps(speeds),
+        'latest_radar': json.dumps(latest_radar),
+        'average_radar': json.dumps(average_radar),
     }
     return render(request, 'dashboard.html', context)
